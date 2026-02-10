@@ -50,8 +50,7 @@
         }
 
         .header {
-            padding: 24px;
-            border-bottom: 1px solid var(--border);
+            padding: 24px 24px 0 24px;
         }
 
         .header h1 {
@@ -69,6 +68,52 @@
             font-size: 13px;
             color: var(--text-secondary);
             font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 16px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            padding: 0 24px 16px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab {
+            flex: 1;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab:hover {
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tab-content.active {
+            display: flex;
         }
 
         .functions {
@@ -333,21 +378,200 @@
             margin-bottom: 0;
         }
 
+        /* Solve Mode */
+        .solve-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .calculator-input-area {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .calc-display {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            color: var(--text-primary);
+            word-break: break-all;
+        }
+
+        .calc-input {
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .calc-input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .calc-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .calc-btn:hover {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: var(--bg-primary);
+            transform: translateY(-1px);
+        }
+
+        .calc-btn:active {
+            transform: translateY(0);
+        }
+
+        .calc-btn.operator {
+            background: rgba(74, 158, 255, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .calc-btn.operator:hover {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+
+        .calc-btn.equals {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+            grid-column: span 2;
+        }
+
+        .calc-btn.equals:hover {
+            background: var(--accent-cyan);
+        }
+
+        .calc-btn.clear {
+            background: rgba(255, 77, 77, 0.1);
+            color: #ff4d4d;
+        }
+
+        .calc-btn.clear:hover {
+            background: #ff4d4d;
+            color: var(--bg-primary);
+        }
+
+        .history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .history-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .history-item {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .history-item:hover {
+            border-color: var(--accent-blue);
+            transform: translateX(2px);
+        }
+
+        .history-item .expression {
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .history-item .result {
+            color: var(--accent-cyan);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .history-item .solution {
+            color: var(--accent-purple);
+            margin-top: 4px;
+        }
+
+        .clear-history {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        .clear-history:hover {
+            background: rgba(255, 77, 77, 0.1);
+            border-color: #ff4d4d;
+            color: #ff4d4d;
+        }
+
         /* Scrollbar */
-        .functions::-webkit-scrollbar {
+        .functions::-webkit-scrollbar,
+        .history::-webkit-scrollbar {
             width: 8px;
         }
 
-        .functions::-webkit-scrollbar-track {
+        .functions::-webkit-scrollbar-track,
+        .history::-webkit-scrollbar-track {
             background: var(--bg-secondary);
         }
 
-        .functions::-webkit-scrollbar-thumb {
+        .functions::-webkit-scrollbar-thumb,
+        .history::-webkit-scrollbar-thumb {
             background: var(--border);
             border-radius: 4px;
         }
 
-        .functions::-webkit-scrollbar-thumb:hover {
+        .functions::-webkit-scrollbar-thumb:hover,
+        .history::-webkit-scrollbar-thumb:hover {
             background: var(--text-secondary);
         }
     </style>
@@ -360,38 +584,93 @@
                 <p>mathematical plotter</p>
             </div>
             
-            <div class="functions" id="functionsList">
-                <!-- Functions will be added here -->
+            <div class="tabs">
+                <button class="tab active" data-tab="graph">Graph</button>
+                <button class="tab" data-tab="solve">Solve</button>
             </div>
             
-            <button class="add-function" id="addFunction">+ Add Function</button>
-            
-            <div class="controls">
-                <div class="control-group">
-                    <label class="control-label">Viewport Range</label>
-                    <div class="control-row">
-                        <input type="number" class="control-input" id="xMin" value="-10" step="0.5">
-                        <input type="number" class="control-input" id="xMax" value="10" step="0.5">
-                    </div>
-                    <div class="control-row" style="margin-top: 8px;">
-                        <input type="number" class="control-input" id="yMin" value="-10" step="0.5">
-                        <input type="number" class="control-input" id="yMax" value="10" step="0.5">
-                    </div>
+            <!-- Graph Tab -->
+            <div class="tab-content active" id="graphTab">
+                <div class="functions" id="functionsList">
+                    <!-- Functions will be added here -->
                 </div>
                 
-                <div class="control-group">
-                    <label class="control-label">Grid Options</label>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="showGrid" checked>
-                        <label for="showGrid">Show Grid</label>
+                <button class="add-function" id="addFunction">+ Add Function</button>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label class="control-label">Viewport Range</label>
+                        <div class="control-row">
+                            <input type="number" class="control-input" id="xMin" value="-10" step="0.5">
+                            <input type="number" class="control-input" id="xMax" value="10" step="0.5">
+                        </div>
+                        <div class="control-row" style="margin-top: 8px;">
+                            <input type="number" class="control-input" id="yMin" value="-10" step="0.5">
+                            <input type="number" class="control-input" id="yMax" value="10" step="0.5">
+                        </div>
                     </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="showAxes" checked>
-                        <label for="showAxes">Show Axes</label>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Grid Options</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="showGrid" checked>
+                            <label for="showGrid">Show Grid</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="showAxes" checked>
+                            <label for="showAxes">Show Axes</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="showLabels" checked>
+                            <label for="showLabels">Show Labels</label>
+                        </div>
                     </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="showLabels" checked>
-                        <label for="showLabels">Show Labels</label>
+                </div>
+            </div>
+            
+            <!-- Solve Tab -->
+            <div class="tab-content" id="solveTab">
+                <div class="solve-container">
+                    <div class="calculator-input-area">
+                        <div class="calc-display" id="calcDisplay">0</div>
+                        <input type="text" class="calc-input" id="calcInput" placeholder="Enter expression or equation...">
+                    </div>
+                    
+                    <div class="calc-buttons">
+                        <button class="calc-btn" data-value="7">7</button>
+                        <button class="calc-btn" data-value="8">8</button>
+                        <button class="calc-btn" data-value="9">9</button>
+                        <button class="calc-btn operator" data-value="/">/</button>
+                        
+                        <button class="calc-btn" data-value="4">4</button>
+                        <button class="calc-btn" data-value="5">5</button>
+                        <button class="calc-btn" data-value="6">6</button>
+                        <button class="calc-btn operator" data-value="*">×</button>
+                        
+                        <button class="calc-btn" data-value="1">1</button>
+                        <button class="calc-btn" data-value="2">2</button>
+                        <button class="calc-btn" data-value="3">3</button>
+                        <button class="calc-btn operator" data-value="-">−</button>
+                        
+                        <button class="calc-btn" data-value="0">0</button>
+                        <button class="calc-btn" data-value=".">.</button>
+                        <button class="calc-btn clear" data-value="C">C</button>
+                        <button class="calc-btn operator" data-value="+">+</button>
+                        
+                        <button class="calc-btn" data-value="(">(</button>
+                        <button class="calc-btn" data-value=")">)</button>
+                        <button class="calc-btn" data-value="x">x</button>
+                        <button class="calc-btn" data-value="^">^</button>
+                        
+                        <button class="calc-btn equals" data-value="=">=</button>
+                        <button class="calc-btn operator" data-value="sqrt">√</button>
+                        <button class="calc-btn operator" data-value="sin">sin</button>
+                    </div>
+                    
+                    <div class="history">
+                        <div class="history-title">History</div>
+                        <div id="historyList"></div>
+                        <button class="clear-history" id="clearHistory">Clear History</button>
                     </div>
                 </div>
             </div>
@@ -445,6 +724,341 @@
                 } catch (error) {
                     return NaN;
                 }
+            }
+            
+            static evaluateExpression(expression) {
+                try {
+                    let expr = expression
+                        .replace(/\^/g, '**')
+                        .replace(/×/g, '*')
+                        .replace(/÷/g, '/')
+                        .replace(/√/g, 'Math.sqrt')
+                        .replace(/sin\(/g, 'Math.sin(')
+                        .replace(/cos\(/g, 'Math.cos(')
+                        .replace(/tan\(/g, 'Math.tan(')
+                        .replace(/sqrt\(/g, 'Math.sqrt(')
+                        .replace(/abs\(/g, 'Math.abs(')
+                        .replace(/log\(/g, 'Math.log10(')
+                        .replace(/ln\(/g, 'Math.log(')
+                        .replace(/exp\(/g, 'Math.exp(')
+                        .replace(/pi/g, 'Math.PI')
+                        .replace(/e(?![a-z])/g, 'Math.E');
+                    
+                    const result = eval(expr);
+                    return result;
+                } catch (error) {
+                    return 'Error';
+                }
+            }
+        }
+
+        // Equation Solver
+        class EquationSolver {
+            static solve(equation) {
+                try {
+                    // Check if it's an equation (contains =)
+                    if (!equation.includes('=')) {
+                        // Just evaluate as expression
+                        const result = MathParser.evaluateExpression(equation);
+                        return { type: 'expression', result: result };
+                    }
+                    
+                    // Split equation into left and right sides
+                    const parts = equation.split('=');
+                    if (parts.length !== 2) {
+                        return { type: 'error', message: 'Invalid equation format' };
+                    }
+                    
+                    const left = parts[0].trim();
+                    const right = parts[1].trim();
+                    
+                    // Check if variable x exists
+                    if (!left.includes('x') && !right.includes('x')) {
+                        // No variable, just check if equal
+                        const leftVal = MathParser.evaluateExpression(left);
+                        const rightVal = MathParser.evaluateExpression(right);
+                        return { 
+                            type: 'equality', 
+                            equal: Math.abs(leftVal - rightVal) < 0.0001,
+                            leftVal,
+                            rightVal
+                        };
+                    }
+                    
+                    // Try to solve for x
+                    const solution = this.solveForX(left, right);
+                    return solution;
+                    
+                } catch (error) {
+                    return { type: 'error', message: error.message };
+                }
+            }
+            
+            static solveForX(left, right) {
+                // Convert to standard form: f(x) = 0
+                const expression = `(${left}) - (${right})`;
+                
+                // Detect equation type
+                const degree = this.detectDegree(expression);
+                
+                if (degree === 1) {
+                    return this.solveLinear(expression);
+                } else if (degree === 2) {
+                    return this.solveQuadratic(expression);
+                } else if (degree > 2) {
+                    return this.solveNumerical(expression);
+                } else {
+                    return { type: 'error', message: 'Cannot determine equation type' };
+                }
+            }
+            
+            static detectDegree(expr) {
+                // Simple degree detection
+                if (expr.includes('x^3') || expr.includes('x**3')) return 3;
+                if (expr.includes('x^2') || expr.includes('x**2') || expr.includes('x*x')) return 2;
+                if (expr.includes('x')) return 1;
+                return 0;
+            }
+            
+            static solveLinear(expr) {
+                // Solve ax + b = 0
+                // Evaluate at two points and interpolate
+                const f0 = MathParser.evaluate(expr, 0);
+                const f1 = MathParser.evaluate(expr, 1);
+                
+                if (Math.abs(f1 - f0) < 0.0001) {
+                    return { type: 'error', message: 'No unique solution' };
+                }
+                
+                // Linear interpolation: x = -b/a
+                const x = -f0 / (f1 - f0);
+                
+                return { type: 'solution', variable: 'x', value: x, solutions: [x] };
+            }
+            
+            static solveQuadratic(expr) {
+                // Extract coefficients using numerical methods
+                const a = this.getCoefficient(expr, 2);
+                const b = this.getCoefficient(expr, 1);
+                const c = this.getCoefficient(expr, 0);
+                
+                const discriminant = b * b - 4 * a * c;
+                
+                if (discriminant < 0) {
+                    return { type: 'error', message: 'No real solutions (complex roots)' };
+                }
+                
+                const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+                const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+                
+                const solutions = Math.abs(x1 - x2) < 0.0001 ? [x1] : [x1, x2];
+                
+                return { 
+                    type: 'solution', 
+                    variable: 'x', 
+                    value: solutions[0],
+                    solutions: solutions 
+                };
+            }
+            
+            static getCoefficient(expr, degree) {
+                // Numerical coefficient extraction
+                const points = [
+                    { x: 0, y: MathParser.evaluate(expr, 0) },
+                    { x: 1, y: MathParser.evaluate(expr, 1) },
+                    { x: -1, y: MathParser.evaluate(expr, -1) },
+                    { x: 2, y: MathParser.evaluate(expr, 2) }
+                ];
+                
+                if (degree === 0) return points[0].y;
+                if (degree === 1) return (points[1].y - points[0].y) - 
+                    this.getCoefficient(expr, 2) * (1 - 0);
+                if (degree === 2) {
+                    // Second difference / 2
+                    const d1 = points[1].y - points[0].y;
+                    const d2 = points[3].y - points[1].y;
+                    return (d2 - d1) / 2;
+                }
+                
+                return 0;
+            }
+            
+            static solveNumerical(expr) {
+                // Newton-Raphson method
+                let x = 1; // Initial guess
+                const maxIterations = 100;
+                const tolerance = 0.0001;
+                const h = 0.0001;
+                
+                for (let i = 0; i < maxIterations; i++) {
+                    const fx = MathParser.evaluate(expr, x);
+                    const fxh = MathParser.evaluate(expr, x + h);
+                    const derivative = (fxh - fx) / h;
+                    
+                    if (Math.abs(derivative) < tolerance) {
+                        break;
+                    }
+                    
+                    const xNew = x - fx / derivative;
+                    
+                    if (Math.abs(xNew - x) < tolerance) {
+                        return { type: 'solution', variable: 'x', value: xNew, solutions: [xNew] };
+                    }
+                    
+                    x = xNew;
+                }
+                
+                // Verify solution
+                const verification = Math.abs(MathParser.evaluate(expr, x));
+                if (verification < 0.01) {
+                    return { type: 'solution', variable: 'x', value: x, solutions: [x] };
+                }
+                
+                return { type: 'error', message: 'Could not find solution numerically' };
+            }
+        }
+
+        // Calculator
+        class Calculator {
+            constructor() {
+                this.display = document.getElementById('calcDisplay');
+                this.input = document.getElementById('calcInput');
+                this.historyList = document.getElementById('historyList');
+                this.history = [];
+                
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                // Button clicks
+                document.querySelectorAll('.calc-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const value = btn.dataset.value;
+                        this.handleButton(value);
+                    });
+                });
+                
+                // Input enter key
+                this.input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.calculate();
+                    }
+                });
+                
+                // Clear history
+                document.getElementById('clearHistory').addEventListener('click', () => {
+                    this.clearHistory();
+                });
+            }
+            
+            handleButton(value) {
+                if (value === '=') {
+                    this.calculate();
+                } else if (value === 'C') {
+                    this.clear();
+                } else if (value === 'sqrt') {
+                    this.input.value += 'sqrt(';
+                } else if (value === 'sin') {
+                    this.input.value += 'sin(';
+                } else {
+                    this.input.value += value;
+                }
+                
+                this.input.focus();
+            }
+            
+            clear() {
+                this.input.value = '';
+                this.display.textContent = '0';
+            }
+            
+            calculate() {
+                const expression = this.input.value.trim();
+                if (!expression) return;
+                
+                const result = EquationSolver.solve(expression);
+                
+                let displayText = '';
+                let historyResult = '';
+                
+                if (result.type === 'expression') {
+                    displayText = this.formatNumber(result.result);
+                    historyResult = displayText;
+                } else if (result.type === 'solution') {
+                    if (result.solutions.length === 1) {
+                        displayText = `x = ${this.formatNumber(result.solutions[0])}`;
+                        historyResult = displayText;
+                    } else {
+                        displayText = `x = ${result.solutions.map(s => this.formatNumber(s)).join(', ')}`;
+                        historyResult = displayText;
+                    }
+                } else if (result.type === 'equality') {
+                    displayText = result.equal ? 'True' : 'False';
+                    historyResult = `${this.formatNumber(result.leftVal)} ${result.equal ? '=' : '≠'} ${this.formatNumber(result.rightVal)}`;
+                } else {
+                    displayText = result.message || 'Error';
+                    historyResult = displayText;
+                }
+                
+                this.display.textContent = displayText;
+                this.addToHistory(expression, historyResult, result);
+            }
+            
+            formatNumber(num) {
+                if (typeof num !== 'number' || isNaN(num)) return num;
+                if (!isFinite(num)) return '∞';
+                
+                // Round to reasonable precision
+                const rounded = Math.round(num * 1000000) / 1000000;
+                
+                // Use scientific notation for very large/small numbers
+                if (Math.abs(rounded) > 1000000 || (Math.abs(rounded) < 0.0001 && rounded !== 0)) {
+                    return rounded.toExponential(4);
+                }
+                
+                return rounded.toString();
+            }
+            
+            addToHistory(expression, result, fullResult) {
+                this.history.unshift({ expression, result, fullResult });
+                if (this.history.length > 50) {
+                    this.history.pop();
+                }
+                this.renderHistory();
+            }
+            
+            renderHistory() {
+                this.historyList.innerHTML = '';
+                
+                this.history.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    
+                    let content = `
+                        <div class="expression">${item.expression}</div>
+                        <div class="result">${item.result}</div>
+                    `;
+                    
+                    if (item.fullResult.type === 'solution' && item.fullResult.solutions) {
+                        const solutions = item.fullResult.solutions.map(s => this.formatNumber(s)).join(', ');
+                        content += `<div class="solution">Solution(s): ${solutions}</div>`;
+                    }
+                    
+                    div.innerHTML = content;
+                    
+                    // Click to reuse
+                    div.addEventListener('click', () => {
+                        this.input.value = item.expression;
+                        this.input.focus();
+                    });
+                    
+                    this.historyList.appendChild(div);
+                });
+            }
+            
+            clearHistory() {
+                this.history = [];
+                this.renderHistory();
             }
         }
 
@@ -941,6 +1555,29 @@
         
         // Initialize calculator
         const calculator = new GraphingCalculator();
+        const calc = new Calculator();
+        
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                
+                // Update tab buttons
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Update tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                if (tabName === 'graph') {
+                    document.getElementById('graphTab').classList.add('active');
+                } else if (tabName === 'solve') {
+                    document.getElementById('solveTab').classList.add('active');
+                }
+            });
+        });
     </script>
 </body>
 </html>
