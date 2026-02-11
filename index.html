@@ -1274,7 +1274,7 @@
                     });
                 });
                 
-                // Color picker simulation
+                // Line color randomizer
                 container.querySelectorAll('.color-indicator').forEach(indicator => {
                     indicator.addEventListener('click', (e) => {
                         const index = parseInt(e.target.dataset.index);
@@ -1293,6 +1293,7 @@
                 document.getElementById('yMax').value = this.yMax.toFixed(2);
             }
             
+            // Controls graph zoom
             zoom(factor) {
                 const centerX = (this.xMin + this.xMax) / 2;
                 const centerY = (this.yMin + this.yMax) / 2;
