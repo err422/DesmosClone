@@ -2,21 +2,37 @@
 // Math Parser
 // =========================
 class MathParser {
+    static normalizeExpression(expression) {
+        if (typeof expression !== 'string') return '';
+
+        let expr = expression.trim();
+        expr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/π/g, 'pi');
+        expr = expr.replace(/√/g, 'sqrt');
+
+        // Handle common implicit multiplication cases: 2x, 2(x), x2, )(
+        expr = expr.replace(/(\d)\s*(?=x\b)/gi, '$1*');
+        expr = expr.replace(/x\s*(?=\d|\()/gi, 'x*');
+        expr = expr.replace(/(\d|\))\s*\(/g, '$1*(');
+        expr = expr.replace(/\)\s*(?=\d|x|\()/gi, ')*');
+
+        expr = expr.replace(/\^/g, '**');
+        expr = expr.replace(/sin\(/g, 'Math.sin(');
+        expr = expr.replace(/cos\(/g, 'Math.cos(');
+        expr = expr.replace(/tan\(/g, 'Math.tan(');
+        expr = expr.replace(/sqrt\(/g, 'Math.sqrt(');
+        expr = expr.replace(/abs\(/g, 'Math.abs(');
+        expr = expr.replace(/log\(/g, 'Math.log10(');
+        expr = expr.replace(/ln\(/g, 'Math.log(');
+        expr = expr.replace(/exp\(/g, 'Math.exp(');
+        expr = expr.replace(/pi/g, 'Math.PI');
+        expr = expr.replace(/e(?![a-zA-Z0-9_])/g, 'Math.E');
+
+        return expr;
+    }
+
     static evaluate(expression, x) {
         try {
-            let expr = expression
-                .replace(/\^/g, '**')
-                .replace(/sin/g, 'Math.sin')
-                .replace(/cos/g, 'Math.cos')
-                .replace(/tan/g, 'Math.tan')
-                .replace(/sqrt/g, 'Math.sqrt')
-                .replace(/abs/g, 'Math.abs')
-                .replace(/log/g, 'Math.log10')
-                .replace(/ln/g, 'Math.log')
-                .replace(/exp/g, 'Math.exp')
-                .replace(/pi/g, 'Math.PI')
-                .replace(/e(?![a-z])/g, 'Math.E');
-
+            const expr = this.normalizeExpression(expression);
             const func = new Function('x', `return ${expr}`);
             return func(x);
         } catch {
@@ -26,22 +42,7 @@ class MathParser {
 
     static evaluateExpression(expression) {
         try {
-            let expr = expression
-                .replace(/\^/g, '**')
-                .replace(/×/g, '*')
-                .replace(/÷/g, '/')
-                .replace(/√/g, 'Math.sqrt')
-                .replace(/sin\(/g, 'Math.sin(')
-                .replace(/cos\(/g, 'Math.cos(')
-                .replace(/tan\(/g, 'Math.tan(')
-                .replace(/sqrt\(/g, 'Math.sqrt(')
-                .replace(/abs\(/g, 'Math.abs(')
-                .replace(/log\(/g, 'Math.log10(')
-                .replace(/ln\(/g, 'Math.log(')
-                .replace(/exp\(/g, 'Math.exp(')
-                .replace(/pi/g, 'Math.PI')
-                .replace(/e(?![a-z])/g, 'Math.E');
-
+            const expr = this.normalizeExpression(expression);
             return eval(expr);
         } catch {
             return 'Error';
@@ -53,25 +54,33 @@ class MathParser {
 // Equation Solver
 // =========================
 class EquationSolver {
+    static containsVariable(expression) {
+        return /(?:^|[^A-Za-z_])x(?![A-Za-z0-9_])/i.test(expression);
+    }
+
     static solve(equation) {
         try {
-            if (!equation.includes('=')) {
+            const expression = equation.trim();
+            if (!expression.includes('=')) {
+                if (this.containsVariable(expression)) {
+                    return { type: 'error', message: 'Use an equation with = to solve for x' };
+                }
                 return {
                     type: 'expression',
-                    result: MathParser.evaluateExpression(equation)
+                    result: MathParser.evaluateExpression(expression)
                 };
             }
 
-            const parts = equation.split('=');
+            const parts = expression.split('=');
             if (parts.length !== 2) {
                 return { type: 'error', message: 'Invalid equation format' };
             }
 
             const left = parts[0].trim();
             const right = parts[1].trim();
+            const containsX = this.containsVariable(left) || this.containsVariable(right);
 
-            // No variable → just compare
-            if (!left.includes('x') && !right.includes('x')) {
+            if (!containsX) {
                 const leftVal = MathParser.evaluateExpression(left);
                 const rightVal = MathParser.evaluateExpression(right);
 
@@ -95,15 +104,14 @@ class EquationSolver {
 
         if (degree === 1) return this.solveLinear(expr);
         if (degree === 2) return this.solveQuadratic(expr);
-        if (degree > 2) return this.solveNumerical(expr);
-
-        return { type: 'error', message: 'Cannot determine equation type' };
+        return this.solveNumerical(expr);
     }
 
     static detectDegree(expr) {
-        if (expr.includes('x^3') || exper.includes('x**3')) return 3;
-        if (expr.includes('x^2') || expr.includes('x**2') || expr.includes('x*x')) return 2;
-        if (expr.includes('x')) return 1;
+        const normalized = expr.replace(/\s+/g, '').toLowerCase();
+        if (normalized.match(/x\*\*3|x\^3/)) return 3;
+        if (normalized.match(/x\*\*2|x\^2|x\*x/)) return 2;
+        if (normalized.includes('x')) return 1;
         return 0;
     }
 
@@ -111,12 +119,11 @@ class EquationSolver {
         const f0 = MathParser.evaluate(expr, 0);
         const f1 = MathParser.evaluate(expr, 1);
 
-        if (Math.abs(f1 - f0) < 0.0001) {
+        if (!isFinite(f0) || !isFinite(f1) || Math.abs(f1 - f0) < 0.0000001) {
             return { type: 'error', message: 'No unique solution' };
         }
 
         const x = -f0 / (f1 - f0);
-
         return {
             type: 'solution',
             variable: 'x',
@@ -131,6 +138,9 @@ class EquationSolver {
         const c = this.getCoefficient(expr, 0);
 
         const d = b * b - 4 * a * c;
+        if (!isFinite(a) || !isFinite(b) || !isFinite(c)) {
+            return this.solveNumerical(expr);
+        }
 
         if (d < 0) {
             return { type: 'error', message: 'No real solutions (complex roots)' };
@@ -138,8 +148,7 @@ class EquationSolver {
 
         const x1 = (-b + Math.sqrt(d)) / (2 * a);
         const x2 = (-b - Math.sqrt(d)) / (2 * a);
-
-        const solutions = Math.abs(x1 - x2) < 0.0001 ? [x1] : [x1, x2];
+        const solutions = Math.abs(x1 - x2) < 0.000001 ? [x1] : [x1, x2];
 
         return {
             type: 'solution',
@@ -158,56 +167,80 @@ class EquationSolver {
         ];
 
         if (degree === 0) return pts[0].y;
+        if (degree === 1) return (pts[1].y - pts[0].y) - this.getCoefficient(expr, 2);
 
-        if (degree === 1) {
-            return (pts[1].y - pts[0].y) -
-                this.getCoefficient(expr, 2);
-        }
-
-        if (degree === 2) {
-            const d1 = pts[1].y - pts[0].y;
-            const d2 = pts[3].y - pts[1].y;
-            return (d2 - d1) / 2;
-        }
-
-        return 0;
+        const d1 = pts[1].y - pts[0].y;
+        const d2 = pts[3].y - pts[1].y;
+        return (d2 - d1) / 2;
     }
 
     static solveNumerical(expr) {
-        let x = 1;
-        const tol = 0.0001;
-        const h = 0.0001;
+        const f = (x) => MathParser.evaluate(expr, x);
+        const roots = new Set();
+        const searchMin = -100;
+        const searchMax = 100;
+        const steps = 400;
 
-        for (let i = 0; i < 100; i++) {
-            const fx = MathParser.evaluate(expr, x);
-            const d = (MathParser.evaluate(expr, x + h) - fx) / h;
+        let previousX = searchMin;
+        let previousY = f(previousX);
 
-            if (Math.abs(d) < tol) break;
+        for (let i = 1; i <= steps; i++) {
+            const currentX = searchMin + ((searchMax - searchMin) * i) / steps;
+            const currentY = f(currentX);
 
-            const xNew = x - fx / d;
-
-            if (Math.abs(xNew - x) < tol) {
-                return {
-                    type: 'solution',
-                    variable: 'x',
-                    value: xNew,
-                    solutions: [xNew]
-                };
+            if (Math.abs(currentY) < 1e-7) {
+                roots.add(this.roundRoot(currentX));
             }
 
-            x = xNew;
+            if (isFinite(previousY) && isFinite(currentY) && previousY * currentY < 0) {
+                const root = this.bisect(f, previousX, currentX);
+                if (root !== null) roots.add(this.roundRoot(root));
+            }
+
+            previousX = currentX;
+            previousY = currentY;
         }
 
-        if (Math.abs(MathParser.evaluate(expr, x)) < 0.01) {
-            return {
-                type: 'solution',
-                variable: 'x',
-                value: x,
-                solutions: [x]
-            };
+        if (roots.size === 0) {
+            return { type: 'error', message: 'No real solutions found' };
         }
 
-        return { type: 'error', message: 'Could not find solution numerically' };
+        const solutions = Array.from(roots).sort((a, b) => a - b);
+        return {
+            type: 'solution',
+            variable: 'x',
+            value: solutions[0],
+            solutions
+        };
+    }
+
+    static bisect(f, a, b) {
+        let fa = f(a);
+        let fb = f(b);
+
+        if (!isFinite(fa) || !isFinite(fb) || fa * fb > 0) {
+            return null;
+        }
+
+        for (let i = 0; i < 50; i++) {
+            const mid = (a + b) / 2;
+            const fm = f(mid);
+            if (!isFinite(fm)) return null;
+            if (Math.abs(fm) < 1e-10) return mid;
+            if (fa * fm < 0) {
+                b = mid;
+                fb = fm;
+            } else {
+                a = mid;
+                fa = fm;
+            }
+        }
+
+        return (a + b) / 2;
+    }
+
+    static roundRoot(value) {
+        return Math.round(value * 1e6) / 1e6;
     }
 }
 
@@ -314,19 +347,41 @@ class GraphApp {
             return;
         }
 
-        try {
-            const result = MathParser.evaluateExpression(input);
-            if (result === 'Error' || isNaN(result)) {
+        const solution = EquationSolver.solve(input);
+
+        if (solution.type === 'expression') {
+            if (solution.result === 'Error' || isNaN(solution.result)) {
                 resultEl.classList.remove('visible');
-            } else {
-                // Format the result
-                const formatted = typeof result === 'number' ? result.toFixed(6).replace(/\.?0+$/, '') : result;
-                resultEl.textContent = formatted;
-                resultEl.classList.add('visible');
+                return;
             }
-        } catch {
-            resultEl.classList.remove('visible');
+            const formatted = typeof solution.result === 'number'
+                ? solution.result.toFixed(6).replace(/\.?0+$/, '')
+                : solution.result;
+            resultEl.textContent = formatted;
+            resultEl.classList.add('visible');
+            return;
         }
+
+        if (solution.type === 'equality') {
+            resultEl.textContent = solution.equal ? 'true' : 'false';
+            resultEl.classList.add('visible');
+            return;
+        }
+
+        if (solution.type === 'solution') {
+            const solutions = solution.solutions.map((value) => {
+                if (Number.isFinite(value)) {
+                    return value.toFixed(6).replace(/\.?0+$/, '');
+                }
+                return String(value);
+            });
+            resultEl.textContent = `x = ${solutions.join(', ')}`;
+            resultEl.classList.add('visible');
+            return;
+        }
+
+        resultEl.textContent = solution.message || 'Error';
+        resultEl.classList.add('visible');
     }
 
     addFunction() {
