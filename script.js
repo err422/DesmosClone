@@ -671,4 +671,3 @@ class GraphApp {
 document.addEventListener('DOMContentLoaded', () => {
     new GraphApp();
 });
-}
