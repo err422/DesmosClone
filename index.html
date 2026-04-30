@@ -15,13 +15,13 @@
                 <p>mathematical plotter</p>
             </div>
             
-            <div class="tabs">
-                <button class="tab active" data-tab="graph">Graph</button>
-                <button class="tab" data-tab="solve">Solve</button>
-            </div>
-            
             <!-- Graph Tab -->
             <div class="tab-content active" id="graphTab">
+                <div class="calc-input-section">
+                    <input type="text" class="quick-calc-input" id="quickCalcInput" placeholder="Enter expression...">
+                    <div class="quick-calc-result" id="quickCalcResult"></div>
+                </div>
+                
                 <div class="functions" id="functionsList">
                     <!-- Functions will be added here -->
                 </div>
@@ -58,53 +58,6 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Solve Tab -->
-            <div class="tab-content" id="solveTab">
-                <div class="solve-container">
-                    <div class="calculator-input-area">
-                        <div class="calc-display" id="calcDisplay">0</div>
-                        <input type="text" class="calc-input" id="calcInput" placeholder="Enter expression or equation...">
-                    </div>
-                    
-                    <div class="calc-buttons">
-                        <button class="calc-btn" data-value="7">7</button>
-                        <button class="calc-btn" data-value="8">8</button>
-                        <button class="calc-btn" data-value="9">9</button>
-                        <button class="calc-btn operator" data-value="/">/</button>
-                        
-                        <button class="calc-btn" data-value="4">4</button>
-                        <button class="calc-btn" data-value="5">5</button>
-                        <button class="calc-btn" data-value="6">6</button>
-                        <button class="calc-btn operator" data-value="*">×</button>
-                        
-                        <button class="calc-btn" data-value="1">1</button>
-                        <button class="calc-btn" data-value="2">2</button>
-                        <button class="calc-btn" data-value="3">3</button>
-                        <button class="calc-btn operator" data-value="-">−</button>
-                        
-                        <button class="calc-btn" data-value="0">0</button>
-                        <button class="calc-btn" data-value=".">.</button>
-                        <button class="calc-btn clear" data-value="C">C</button>
-                        <button class="calc-btn operator" data-value="+">+</button>
-                        
-                        <button class="calc-btn" data-value="(">(</button>
-                        <button class="calc-btn" data-value=")">)</button>
-                        <button class="calc-btn" data-value="x">x</button>
-                        <button class="calc-btn" data-value="^">^</button>
-                        
-                        <button class="calc-btn equals" data-value="=">=</button>
-                        <button class="calc-btn operator" data-value="sqrt">√</button>
-                        <button class="calc-btn operator" data-value="sin">sin</button>
-                    </div>
-                    
-                    <div class="history">
-                        <div class="history-title">History</div>
-                        <div id="historyList"></div>
-                        <button class="clear-history" id="clearHistory">Clear History</button>
-                    </div>
-                </div>
-            </div>
         </div>
         
         <div class="canvas-container">
@@ -129,6 +82,6 @@
             </div>
         </div>
     </div>
-    <script href="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
