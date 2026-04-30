@@ -608,4 +608,5 @@ body {
 .functions::-webkit-scrollbar-thumb:hover,
 .history::-webkit-scrollbar-thumb:hover {
 	background: var(--text-secondary);
+}
 }	
