@@ -8,11 +8,14 @@ class MathParser {
         let expr = expression.trim();
         expr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/π/g, 'pi');
         expr = expr.replace(/√/g, 'sqrt');
+        expr = this.replaceLogSyntax(expr);
 
         // Handle common implicit multiplication cases: 2x, 2(x), x2, )(
         expr = expr.replace(/(\d)\s*(?=x\b)/gi, '$1*');
         expr = expr.replace(/x\s*(?=\d|\()/gi, 'x*');
-        expr = expr.replace(/(\d|\))\s*\(/g, '$1*(');
+        expr = expr.replace(/(\d|\))\s*\(/g, (match, p1, offset) => {
+            return offset > 0 && /[A-Za-z0-9_.]/.test(expr[offset - 1]) ? match : `${p1}*(`;
+        });
         expr = expr.replace(/\)\s*(?=\d|x|\()/gi, ')*');
 
         expr = expr.replace(/\^/g, '**');
@@ -21,13 +24,107 @@ class MathParser {
         expr = expr.replace(/tan\(/g, 'Math.tan(');
         expr = expr.replace(/sqrt\(/g, 'Math.sqrt(');
         expr = expr.replace(/abs\(/g, 'Math.abs(');
-        expr = expr.replace(/log\(/g, 'Math.log10(');
         expr = expr.replace(/ln\(/g, 'Math.log(');
         expr = expr.replace(/exp\(/g, 'Math.exp(');
         expr = expr.replace(/pi/g, 'Math.PI');
         expr = expr.replace(/e(?![a-zA-Z0-9_])/g, 'Math.E');
 
         return expr;
+    }
+
+    static replaceLogSyntax(expr) {
+        expr = this.replaceLogBaseNotation(expr);
+        expr = this.replaceLogFunction(expr);
+        return expr;
+    }
+
+    static replaceLogBaseNotation(expr) {
+        let output = '';
+        let i = 0;
+
+        while (i < expr.length) {
+            const prefix = expr.slice(i);
+            const baseMatch = prefix.match(/^log_([0-9]+(?:\.[0-9]+)?)/);
+
+            if (baseMatch && expr[i + baseMatch[0].length] === '(') {
+                const base = baseMatch[1];
+                i += baseMatch[0].length + 1;
+                let depth = 1;
+                let start = i;
+                let end = i;
+
+                while (end < expr.length && depth > 0) {
+                    if (expr[end] === '(') depth++;
+                    if (expr[end] === ')') depth--;
+                    end++;
+                }
+
+                const argument = expr.slice(start, end - 1);
+                output += `(Math.log(${argument})/Math.log(${base}))`;
+                i = end;
+                continue;
+            }
+
+            output += expr[i];
+            i += 1;
+        }
+
+        return output;
+    }
+
+    static replaceLogFunction(expr) {
+        let output = '';
+        let i = 0;
+
+        while (i < expr.length) {
+            const isStandaloneLog = expr.slice(i, i + 4) === 'log(' && (i === 0 || !/[A-Za-z0-9_.]/.test(expr[i - 1]));
+            if (isStandaloneLog) {
+                let depth = 1;
+                let start = i + 4;
+                let end = start;
+
+                while (end < expr.length && depth > 0) {
+                    if (expr[end] === '(') depth++;
+                    if (expr[end] === ')') depth--;
+                    end++;
+                }
+
+                const args = expr.slice(start, end - 1);
+                const parts = this.splitTopLevelComma(args);
+
+                if (parts.length === 2) {
+                    output += `(Math.log(${parts[0]})/Math.log(${parts[1]}))`;
+                } else {
+                    output += `Math.log10(${args})`;
+                }
+
+                i = end;
+                continue;
+            }
+
+            output += expr[i];
+            i += 1;
+        }
+
+        return output;
+    }
+
+    static splitTopLevelComma(string) {
+        let parts = [''];
+        let depth = 0;
+
+        for (let i = 0; i < string.length; i++) {
+            const char = string[i];
+            if (char === '(') depth += 1;
+            if (char === ')') depth -= 1;
+            if (char === ',' && depth === 0) {
+                parts.push('');
+                continue;
+            }
+            parts[parts.length - 1] += char;
+        }
+
+        return parts.map((part) => part.trim()).filter(Boolean);
     }
 
     static evaluate(expression, x) {
@@ -102,8 +199,18 @@ class EquationSolver {
         const expr = `(${left}) - (${right})`;
         const degree = this.detectDegree(expr);
 
-        if (degree === 1) return this.solveLinear(expr);
-        if (degree === 2) return this.solveQuadratic(expr);
+        if (degree === 1) {
+            const result = this.solveLinear(expr);
+            if (result.type === 'solution') return result;
+            return this.solveNumerical(expr);
+        }
+
+        if (degree === 2) {
+            const result = this.solveQuadratic(expr);
+            if (result.type === 'solution') return result;
+            return this.solveNumerical(expr);
+        }
+
         return this.solveNumerical(expr);
     }
 
@@ -111,7 +218,15 @@ class EquationSolver {
         const normalized = expr.replace(/\s+/g, '').toLowerCase();
         if (normalized.match(/x\*\*3|x\^3/)) return 3;
         if (normalized.match(/x\*\*2|x\^2|x\*x/)) return 2;
-        if (normalized.includes('x')) return 1;
+
+        if (normalized.includes('x')) {
+            const nonPolynomialPatterns = /(\*\*|\^)\(?x\b|x\b\*\*|x\^|log\(|ln\(|sin\(|cos\(|tan\(|sqrt\(|exp\(|Math\./;
+            if (nonPolynomialPatterns.test(normalized)) {
+                return 0;
+            }
+            return 1;
+        }
+
         return 0;
     }
 
@@ -188,13 +303,11 @@ class EquationSolver {
             const currentX = searchMin + ((searchMax - searchMin) * i) / steps;
             const currentY = f(currentX);
 
-            if (Math.abs(currentY) < 1e-7) {
-                roots.add(this.roundRoot(currentX));
-            }
-
             if (isFinite(previousY) && isFinite(currentY) && previousY * currentY < 0) {
                 const root = this.bisect(f, previousX, currentX);
                 if (root !== null) roots.add(this.roundRoot(root));
+            } else if (isFinite(currentY) && Math.abs(currentY) < 1e-12 && isFinite(previousY) && Math.abs(previousY) > 1e-12) {
+                roots.add(this.roundRoot(currentX));
             }
 
             previousX = currentX;
